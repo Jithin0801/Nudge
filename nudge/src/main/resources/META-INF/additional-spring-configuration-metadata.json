@@ -1,0 +1,24 @@
+{
+  "properties": [
+    {
+      "name": "keystorePath",
+      "type": "java.lang.String",
+      "description": "A description for 'keystorePath'"
+    },
+    {
+      "name": "keystorePassword",
+      "type": "java.lang.String",
+      "description": "A description for 'keystorePath'"
+    },
+    {
+      "name": "keyAlias",
+      "type": "java.lang.String",
+      "description": "A description for 'keystorePath'"
+    },
+    {
+      "name": "keyPassword",
+      "type": "java.lang.String",
+      "description": "A description for 'keystorePath'"
+    }
+  ]
+}
