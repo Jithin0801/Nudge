@@ -9,4 +9,6 @@ import com.jithin.nudge.entity.StatusWorkflow;
 @Repository
 public interface StatusWorkflowRepository extends JpaRepository<StatusWorkflow, Long> {
     boolean existsByFromStatusAndToStatus(JobApplicationStatus fromStatus, JobApplicationStatus toStatus);
+
+    java.util.List<StatusWorkflow> findByFromStatus(JobApplicationStatus fromStatus);
 }

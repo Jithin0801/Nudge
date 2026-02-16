@@ -7,6 +7,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Menu from "@mui/material/Menu";
@@ -18,6 +19,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 interface DecodedToken {
   sub: string;
+  fullName?: string;
   // Add other fields if needed
 }
 
@@ -27,29 +29,22 @@ export default function Navbar() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [userInitials, setUserInitials] = React.useState<string>("");
-
-  const currentTab = searchParams.get("tab") === "archived" ? 1 : 0;
+  const [username, setUsername] = React.useState<string>("User");
 
   React.useEffect(() => {
     const token = Cookies.get("nudge_token");
     if (token) {
       try {
         const decoded = jwtDecode<DecodedToken>(token);
-        // Assuming 'sub' contains the username/email
-        const username = decoded.sub || "User";
-        // Extract initials: First 2 chars of username
-        setUserInitials(username.substring(0, 2).toUpperCase());
+        // Assuming 'sub' contains the username/email.
+        // If your JWT has a specific 'name' field, use that.
+        // For now, using sub as per previous logic but displaying it fully.
+        setUsername(decoded.fullName || decoded.sub || "User");
       } catch (error) {
         console.error("Failed to decode token", error);
       }
     }
   }, []);
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    const tabName = newValue === 1 ? "archived" : "jobs";
-    router.push(`/dashboard?tab=${tabName}`);
-  };
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -89,36 +84,35 @@ export default function Navbar() {
             Nudge
           </Typography>
 
-          <Tabs
-            value={currentTab}
-            onChange={handleTabChange}
-            textColor="primary"
-            indicatorColor="primary"
-            sx={{ flexGrow: 1 }}
-          >
-            <Tab label="Jobs" />
-            <Tab label="Archived" />
-          </Tabs>
+          <Box sx={{ flexGrow: 1 }} />
 
           <Box sx={{ flexGrow: 0 }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+                p: 1,
+                borderRadius: 2,
+                "&:hover": {
+                  bgcolor: "action.hover",
+                },
+              }}
               onClick={handleMenu}
-              color="inherit"
-              sx={{ p: 0 }}
             >
-              <Avatar sx={{ bgcolor: "secondary.main" }}>
-                {userInitials || "U"}
-              </Avatar>
-            </IconButton>
+              <Typography
+                variant="subtitle1"
+                sx={{ mr: 1, fontWeight: "medium", color: "text.primary" }}
+              >
+                Hi, {username}
+              </Typography>
+              <ArrowDropDownIcon color="action" />
+            </Box>
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
               anchorOrigin={{
-                vertical: "top",
+                vertical: "bottom",
                 horizontal: "right",
               }}
               keepMounted
@@ -128,6 +122,7 @@ export default function Navbar() {
               }}
               open={Boolean(anchorEl)}
               onClose={handleClose}
+              sx={{ mt: 1 }}
             >
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>

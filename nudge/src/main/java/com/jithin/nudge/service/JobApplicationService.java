@@ -82,8 +82,12 @@ public class JobApplicationService {
     }
 
     private JobApplicationResponseDTO mapToDTO(JobApplication jobApplication) {
+        List<String> possibleStatuses =
+                statusWorkflowRepository.findByFromStatus(jobApplication.getStatus()).stream().map(workflow -> workflow.getToStatus().getStatusName()).collect(Collectors.toList());
+
         return JobApplicationResponseDTO.builder().applicationId(jobApplication.getApplicationId()).title(jobApplication.getTitle()).summary(jobApplication.getSummary())
                 .companyName(jobApplication.getCompanyName()).appliedDate(jobApplication.getAppliedDate()).nextFollowUpDate(jobApplication.getNextFollowUpDate())
-                .applicationType(jobApplication.getApplicationType()).status(jobApplication.getStatus().getStatusName()).resume(jobApplication.getResume()).build();
+                .applicationType(jobApplication.getApplicationType()).status(jobApplication.getStatus().getStatusName()).resume(jobApplication.getResume()).possibleStatuses(possibleStatuses)
+                .lastUpdated(jobApplication.getLastUpdated()).build();
     }
 }

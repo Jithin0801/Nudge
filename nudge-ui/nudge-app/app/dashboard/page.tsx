@@ -20,8 +20,6 @@ function DashboardContent() {
   const [jobs, setJobs] = React.useState<JobApplicationDTO[]>([]);
   const [loading, setLoading] = React.useState(true);
 
-  const currentTab = searchParams.get("tab") === "archived" ? 1 : 0;
-
   React.useEffect(() => {
     // LEARN: Auth protection - check for cookie
     const token = Cookies.get("nudge_token");
@@ -70,11 +68,30 @@ function DashboardContent() {
     router.push("/dashboard/add");
   };
 
-  // Filter jobs based on tab (0: Active/Applied/Interview/Offer, 1: Archived/Rejected)
-  const filteredJobs = jobs.filter((job) => {
-    if (currentTab === 0) return job.status !== "REJECTED";
-    return job.status === "REJECTED";
-  });
+  // Sort jobs: Active first, then Terminal (REJECTED, WITHDRAWN)
+  // Secondary sort: Applied Date descending (newest first)
+  const sortedJobs = React.useMemo(() => {
+    return [...jobs].sort((a, b) => {
+      const isTerminalA = a.status === "REJECTED" || a.status === "WITHDRAWN";
+      const isTerminalB = b.status === "REJECTED" || b.status === "WITHDRAWN";
+
+      if (isTerminalA && !isTerminalB) return 1; // A is terminal, push to bottom
+      if (!isTerminalA && isTerminalB) return -1; // B is terminal, push to bottom
+
+      // If both are same category, sort by date descending
+      return (
+        new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime()
+      );
+    });
+  }, [jobs]);
+
+  const handleJobUpdate = (updatedJob: JobApplicationDTO) => {
+    setJobs((prevJobs) =>
+      prevJobs.map((job) =>
+        job.applicationId === updatedJob.applicationId ? updatedJob : job,
+      ),
+    );
+  };
 
   if (loading) {
     return (
@@ -87,12 +104,16 @@ function DashboardContent() {
   return (
     <Box>
       <Container maxWidth="md" sx={{ mt: 4, pb: 10 }}>
-        {filteredJobs.map((job) => (
-          <JobCard key={job.applicationId} job={job} />
+        {sortedJobs.map((job) => (
+          <JobCard
+            key={job.applicationId}
+            job={job}
+            onJobUpdate={handleJobUpdate}
+          />
         ))}
-        {filteredJobs.length === 0 && (
+        {sortedJobs.length === 0 && (
           <Box sx={{ textAlign: "center", mt: 4, color: "text.secondary" }}>
-            No jobs found in this category.
+            No jobs found.
           </Box>
         )}
       </Container>

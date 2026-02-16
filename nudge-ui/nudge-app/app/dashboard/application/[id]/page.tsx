@@ -14,6 +14,10 @@ import Chip from "@mui/material/Chip";
 import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
 import { JobApplicationDTO } from "../../types";
+import StatusSelector, {
+  getStatusColor,
+  getStatusTextColor,
+} from "../../../components/StatusSelector";
 
 export default function ApplicationDetailsPage() {
   const router = useRouter();
@@ -59,6 +63,10 @@ export default function ApplicationDetailsPage() {
     }
   }, [id, router]);
 
+  const handleJobUpdate = (updatedJob: JobApplicationDTO) => {
+    setJob(updatedJob);
+  };
+
   if (!job) {
     return <Box sx={{ p: 4, textAlign: "center" }}>Loading...</Box>;
   }
@@ -68,31 +76,38 @@ export default function ApplicationDetailsPage() {
       <Button
         startIcon={<ArrowBackIcon />}
         onClick={() => router.back()}
-        sx={{ mb: 2 }}
+        sx={{ mb: 2, color: getStatusTextColor(job.status) }}
       >
         Back to Dashboard
       </Button>
 
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          borderRadius: 2,
+          backgroundColor: `${getStatusColor(job.status)}0D`, // 5% opacity tint
+          borderLeft: `6px solid ${getStatusColor(job.status)}`, // Consistent with JobCard
+        }}
+      >
         <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
           <Grid size={{ xs: 12, sm: 8 }}>
             <Typography variant="h4" component="h1" fontWeight="bold">
               {job.title}
             </Typography>
-            <Typography variant="h6" color="primary">
+            <Typography
+              variant="h6"
+              sx={{ color: getStatusTextColor(job.status) }}
+            >
               {job.companyName}
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }} textAlign={{ sm: "right" }}>
-            <Chip
-              label={job.status}
-              color={
-                job.status === "REJECTED" ? "error"
-                : job.status === "OFFER" ?
-                  "success"
-                : "info"
-              }
-              sx={{ fontSize: "1rem", px: 1 }}
+            <StatusSelector
+              currentStatus={job.status}
+              possibleStatuses={job.possibleStatuses}
+              applicationId={job.applicationId}
+              onStatusUpdate={handleJobUpdate}
             />
           </Grid>
         </Grid>
@@ -114,6 +129,17 @@ export default function ApplicationDetailsPage() {
             <Typography variant="body1" sx={{ mb: 2 }}>
               {job.appliedDate}
             </Typography>
+
+            {job.lastUpdated && (
+              <>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Last Updated
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  {job.lastUpdated}
+                </Typography>
+              </>
+            )}
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             {job.nextFollowUpDate && (
@@ -126,19 +152,18 @@ export default function ApplicationDetailsPage() {
                 </Typography>
               </>
             )}
+            {job.summary && (
+              <Grid size={{ xs: 12 }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Summary
+                </Typography>
+                <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
+                  {job.summary}
+                </Typography>
+              </Grid>
+            )}
           </Grid>
         </Grid>
-
-        {job.summary && (
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="subtitle2" color="text.secondary">
-              Summary
-            </Typography>
-            <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
-              {job.summary}
-            </Typography>
-          </Box>
-        )}
       </Paper>
     </Container>
   );

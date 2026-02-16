@@ -14,11 +14,13 @@ import io.jsonwebtoken.Jwts;
 public class JWTService {
 
     private JKSUtil jksUtil;
+    private final com.jithin.nudge.repository.UserSecurityRepository userSecurityRepository;
 
     public static final long TOKEN_VALIDITY = 10 * 60 * 60;
 
-    public JWTService(JKSUtil jksUtil) {
+    public JWTService(JKSUtil jksUtil, com.jithin.nudge.repository.UserSecurityRepository userSecurityRepository) {
         this.jksUtil = jksUtil;
+        this.userSecurityRepository = userSecurityRepository;
     }
 
     public String extractUsername(String token) throws Exception {
@@ -41,8 +43,15 @@ public class JWTService {
         } else {
             username = principal.toString();
         }
-        return Jwts.builder().issuer(username).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY * 1000)).signWith(privateKey)
-                .compact();
+
+        com.jithin.nudge.entity.UserSecurity user = userSecurityRepository.findUserByEmailId(username);
+        String fullName = "";
+        if (user != null && user.getUserPersonal() != null) {
+            fullName = user.getUserPersonal().getFirstName() + " " + user.getUserPersonal().getLastName();
+        }
+
+        return Jwts.builder().issuer(username).claim("fullName", fullName).issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY * 1000)).signWith(privateKey).compact();
     }
 
 

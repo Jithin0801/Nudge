@@ -22,4 +22,6 @@ public class JobApplicationResponseDTO {
     private String applicationType;
     private String status;
     private byte[] resume;
+    private java.util.List<String> possibleStatuses;
+    private java.time.LocalDateTime lastUpdated;
 }

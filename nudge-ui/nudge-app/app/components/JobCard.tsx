@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Card from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardContent from "@mui/material/CardContent";
@@ -10,35 +10,34 @@ import Chip from "@mui/material/Chip";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { JobApplicationDTO } from "../dashboard/types";
+import StatusSelector, { getStatusColor } from "./StatusSelector";
 
 interface JobCardProps {
   job: JobApplicationDTO;
+  onJobUpdate?: (job: JobApplicationDTO) => void;
 }
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "APPLIED":
-      return "info";
-    case "INTERVIEW":
-      return "warning";
-    case "OFFER":
-      return "success";
-    case "REJECTED":
-      return "error";
-    default:
-      return "default";
-  }
-};
-
-export default function JobCard({ job }: JobCardProps) {
+export default function JobCard({ job, onJobUpdate }: JobCardProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentTab = searchParams.get("tab") || "jobs";
 
   const handleClick = () => {
-    router.push(`/dashboard/application/${job.applicationId}`);
+    router.push(
+      `/dashboard/application/${job.applicationId}?tab=${currentTab}`,
+    );
   };
 
   return (
-    <Card sx={{ mb: 2, borderRadius: 2, boxShadow: 1 }}>
+    <Card
+      sx={{
+        mb: 2,
+        borderRadius: 2,
+        boxShadow: 1,
+        borderLeft: `6px solid ${getStatusColor(job.status)}`,
+        backgroundColor: `${getStatusColor(job.status)}0D`, // 5% opacity for very light tint
+      }}
+    >
       <CardActionArea onClick={handleClick}>
         <CardContent>
           <Grid container alignItems="center" spacing={2}>
@@ -68,15 +67,20 @@ export default function JobCard({ job }: JobCardProps) {
                   gap: 1,
                 }}
               >
-                <Chip
-                  label={job.status}
-                  color={getStatusColor(job.status) as any}
-                  size="small"
-                  variant="outlined"
+                <StatusSelector
+                  currentStatus={job.status}
+                  possibleStatuses={job.possibleStatuses}
+                  applicationId={job.applicationId}
+                  onStatusUpdate={onJobUpdate}
                 />
                 <Typography variant="caption" color="text.secondary">
                   Applied: {job.appliedDate}
                 </Typography>
+                {job.lastUpdated && (
+                  <Typography variant="caption" color="text.secondary">
+                    Updated: {job.lastUpdated}
+                  </Typography>
+                )}
               </Box>
             </Grid>
           </Grid>

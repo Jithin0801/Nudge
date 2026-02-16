@@ -23,7 +23,7 @@ const theme = createTheme({
   palette: {
     mode: "light", // Starting with light mode as requested by "calm" and "vibrant" descriptors
     primary: {
-      main: "#00796b", // Teal shade - vibrant but professional
+      main: "#4285F4", // Google Blue
     },
     secondary: {
       main: "#ff7043", // Deep Orange - complementary and energetic

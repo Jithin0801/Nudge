@@ -6,8 +6,22 @@ export interface JobApplicationDTO {
   appliedDate: string; // LocalDate yyyy-MM-dd
   nextFollowUpDate?: string; // LocalDate yyyy-MM-dd
   applicationType?: string;
-  status: "APPLIED" | "INTERVIEW" | "OFFER" | "REJECTED";
+  status:
+    | "APPLIED"
+    | "SUBMITTED"
+    | "UNDER_REVIEW"
+    | "INTERVIEW"
+    | "INTERVIEWING"
+    | "SCREENING"
+    | "ASSESSMENT"
+    | "OFFER"
+    | "OFFER_RECEIVED"
+    | "ACCEPTED"
+    | "REJECTED"
+    | "WITHDRAWN";
   resume?: string; // Base64 encoded or byte array handling
+  possibleStatuses?: string[];
+  lastUpdated?: string; // LocalDateTime or LocalDate
 }
 
 export const MOCK_JOBS: JobApplicationDTO[] = [

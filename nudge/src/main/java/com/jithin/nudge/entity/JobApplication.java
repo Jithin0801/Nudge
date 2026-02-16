@@ -68,6 +68,9 @@ public class JobApplication {
     @JoinColumn(name = "user_security_id", nullable = false)
     private UserSecurity user;
 
+    @Column(name = "last_updated")
+    private java.time.LocalDateTime lastUpdated;
+
     @PrePersist
     public void prePersist() {
         if (this.applicationId == null) {
@@ -76,5 +79,11 @@ public class JobApplication {
         if (this.appliedDate == null) {
             this.appliedDate = LocalDate.now();
         }
+        this.lastUpdated = java.time.LocalDateTime.now();
+    }
+
+    @jakarta.persistence.PreUpdate
+    public void preUpdate() {
+        this.lastUpdated = java.time.LocalDateTime.now();
     }
 }
