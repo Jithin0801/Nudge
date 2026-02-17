@@ -18,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.jithin.nudge.dto.JobApplicationResponseDTO;
 import com.jithin.nudge.entity.JobApplication;
+import com.jithin.nudge.entity.JobApplicationResume;
 import com.jithin.nudge.entity.JobApplicationStatus;
 import com.jithin.nudge.entity.StatusWorkflow;
 import com.jithin.nudge.entity.UserSecurity;
@@ -59,8 +60,9 @@ class JobApplicationServiceTest {
         JobApplicationStatus nextStatus1 = JobApplicationStatus.builder().statusName("INTERVIEW").build();
         JobApplicationStatus nextStatus2 = JobApplicationStatus.builder().statusName("REJECTED").build();
 
-        JobApplication jobApplication =
-                JobApplication.builder().applicationId(applicationId).title("Software Engineer").status(currentStatus).user(user).active(true).lastUpdated(LocalDateTime.now()).build();
+        JobApplicationResume resume = JobApplicationResume.builder().id(1L).fileName("resume.pdf").data(new byte[] {1, 2, 3}).build();
+        JobApplication jobApplication = JobApplication.builder().applicationId(applicationId).title("Software Engineer").status(currentStatus).user(user).active(true)
+                .lastUpdated(LocalDateTime.now()).jobApplicationResume(resume).resumeFilename("resume.pdf").build();
 
         StatusWorkflow workflowPv1 = StatusWorkflow.builder().fromStatus(currentStatus).toStatus(nextStatus1).build();
         StatusWorkflow workflowPv2 = StatusWorkflow.builder().fromStatus(currentStatus).toStatus(nextStatus2).build();
@@ -78,6 +80,8 @@ class JobApplicationServiceTest {
         assertEquals(2, result.getPossibleStatuses().size());
         assertEquals(Arrays.asList("INTERVIEW", "REJECTED"), result.getPossibleStatuses());
         assertNotNull(result.getLastUpdated());
+        assertEquals("resume.pdf", result.getResumeFilename());
+        assertEquals(1L, result.getResumeId());
     }
 
     @Test

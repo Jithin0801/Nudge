@@ -3,7 +3,6 @@ package com.jithin.nudge.entity;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,7 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -60,9 +58,11 @@ public class JobApplication {
     @Builder.Default
     private boolean active = true;
 
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    private byte[] resume;
+    @Column(name = "resume_filename")
+    private String resumeFilename;
+
+    @jakarta.persistence.OneToOne(mappedBy = "jobApplication", cascade = jakarta.persistence.CascadeType.ALL, fetch = FetchType.LAZY)
+    private JobApplicationResume jobApplicationResume;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_security_id", nullable = false)

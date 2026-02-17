@@ -21,7 +21,8 @@ public class JobApplicationResponseDTO {
     private LocalDate nextFollowUpDate;
     private String applicationType;
     private String status;
-    private byte[] resume;
+    private String resumeFilename;
+    private Long resumeId;
     private java.util.List<String> possibleStatuses;
     private java.time.LocalDateTime lastUpdated;
 }

@@ -32,11 +32,31 @@ export default function AddJobPage() {
     appliedDate: new Date().toISOString().split("T")[0], // Default to today
     applicationType: "",
     status: "APPLIED",
+    resume: "",
+    resumeFilename: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        // Remove the data URL prefix (e.g., "data:application/pdf;base64,")
+        const pureBase64 = base64String.split(",")[1];
+        setFormData((prev) => ({
+          ...prev,
+          resume: pureBase64,
+          resumeFilename: file.name,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -184,6 +204,20 @@ export default function AddJobPage() {
                 value={formData.summary}
                 onChange={handleChange}
               />
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <Button variant="outlined" component="label" fullWidth>
+                {formData.resumeFilename ?
+                  `Selected: ${formData.resumeFilename}`
+                : "Upload Resume (PDF/DOCX)"}
+                <input
+                  type="file"
+                  hidden
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleFileChange}
+                />
+              </Button>
             </Grid>
 
             {error && (

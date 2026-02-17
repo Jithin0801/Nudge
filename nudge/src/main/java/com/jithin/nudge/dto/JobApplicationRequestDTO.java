@@ -29,4 +29,5 @@ public class JobApplicationRequestDTO {
 
 
     private byte[] resume;
+    private String resumeFilename;
 }

@@ -44,9 +44,21 @@ public class JobApplicationController {
     }
 
     @PostMapping
-    public ResponseEntity<WrappedResponse<String>> addJobApplication(@RequestBody @Valid JobApplicationRequestDTO jobApplicationDTO) {
-        jobApplicationService.addJobApplication(jobApplicationDTO, getAuthenticatedUserEmail());
-        return ResponseWrapper.created("Job Application added successfully", null);
+    public ResponseEntity<WrappedResponse<JobApplicationResponseDTO>> addJobApplication(@RequestBody @Valid JobApplicationRequestDTO jobApplicationDTO) {
+        JobApplicationResponseDTO jobApplication = jobApplicationService.addJobApplication(jobApplicationDTO, getAuthenticatedUserEmail());
+        return ResponseWrapper.created("Job Application added successfully", jobApplication);
+    }
+
+    @GetMapping("/{applicationId}/resume")
+    public ResponseEntity<byte[]> downloadResume(@PathVariable String applicationId) {
+        byte[] resumeData = jobApplicationService.downloadResume(applicationId);
+        String filename = jobApplicationService.getResumeFilename(applicationId);
+
+        if (resumeData == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok().header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"").body(resumeData);
     }
 
     @GetMapping

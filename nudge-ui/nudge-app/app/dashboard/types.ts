@@ -19,7 +19,9 @@ export interface JobApplicationDTO {
     | "ACCEPTED"
     | "REJECTED"
     | "WITHDRAWN";
-  resume?: string; // Base64 encoded or byte array handling
+  resume?: string; // Base64 encoded for upload
+  resumeFilename?: string;
+  resumeId?: string;
   possibleStatuses?: string[];
   lastUpdated?: string; // LocalDateTime or LocalDate
 }

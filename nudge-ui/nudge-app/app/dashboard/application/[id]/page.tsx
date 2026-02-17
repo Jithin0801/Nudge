@@ -140,6 +140,43 @@ export default function ApplicationDetailsPage() {
                 </Typography>
               </>
             )}
+
+            {(job.resumeId || job.resumeFilename) && (
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={async () => {
+                  try {
+                    const token = Cookies.get("nudge_token");
+                    if (!token) return;
+                    const response = await fetch(
+                      `http://localhost:8080/api/v1/job-applications/${job.applicationId}/resume`,
+                      {
+                        headers: { Authorization: `Bearer ${token}` },
+                      },
+                    );
+                    if (response.ok) {
+                      const blob = await response.blob();
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = job.resumeFilename || "resume";
+                      document.body.appendChild(a);
+                      a.click();
+                      window.URL.revokeObjectURL(url);
+                      document.body.removeChild(a);
+                    } else {
+                      console.error("Failed to fetch resume");
+                    }
+                  } catch (e) {
+                    console.error("Error downloading resume", e);
+                  }
+                }}
+                sx={{ mt: 1 }}
+              >
+                View Resume
+              </Button>
+            )}
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             {job.nextFollowUpDate && (
