@@ -12,6 +12,7 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import Grid from "@mui/material/Grid";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { API_BASE_URL } from "../../config";
 
 const STATUS_OPTIONS = [
   { value: "APPLIED", label: "Applied" },
@@ -79,17 +80,14 @@ export default function AddJobPage() {
         // Ensure dates are string YYYY-MM-DD
       };
 
-      const response = await fetch(
-        "http://localhost:8080/api/v1/job-applications",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
+      const response = await fetch(`${API_BASE_URL}/api/v1/job-applications`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify(payload),
+      });
 
       if (response.ok) {
         console.log("Job created successfully");

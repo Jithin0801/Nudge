@@ -1,6 +1,6 @@
 package com.jithin.nudge.util;
 
-import java.io.FileInputStream;
+
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -22,7 +22,8 @@ public class JKSUtil {
     private KeyStore keyStore;
     private Key key;
 
-    public JKSUtil(SecurityProperties securityProperties) throws Exception {
+    public JKSUtil(SecurityProperties securityProperties,
+            org.springframework.core.io.ResourceLoader resourceLoader) throws Exception {
         this.keystorePath = securityProperties.keystorePath();
         this.keystorePassword = securityProperties.keystorePassword();
         this.keyAlias = securityProperties.keyAlias();
@@ -30,7 +31,9 @@ public class JKSUtil {
 
         try {
             KeyStore keystore = KeyStore.getInstance("JKS");
-            keystore.load(new FileInputStream(keystorePath), keystorePassword.toCharArray());
+            java.io.InputStream is = resourceLoader.getResource(keystorePath).getInputStream();
+            keystore.load(is, keystorePassword.toCharArray());
+            is.close();
             this.setKeyStore(keystore);
             Key key = keystore.getKey(keyAlias, keyPassword.toCharArray());
             this.setKey(key);

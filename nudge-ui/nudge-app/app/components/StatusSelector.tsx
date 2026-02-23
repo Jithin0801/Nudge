@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import { Chip, CircularProgress } from "@mui/material";
 
 import { JobApplicationDTO } from "../dashboard/types";
+import { API_BASE_URL } from "../config";
 
 interface StatusSelectorProps {
   currentStatus: string;
@@ -106,7 +107,7 @@ export default function StatusSelector({
       }
 
       const response = await fetch(
-        `http://localhost:8080/api/v1/job-applications/${applicationId}/status?status=${newStatus}`,
+        `${API_BASE_URL}/api/v1/job-applications/${applicationId}/status?status=${newStatus}`,
         {
           method: "PATCH", // Updating status workflow
           headers: {
@@ -133,7 +134,7 @@ export default function StatusSelector({
         // If we didn't get the job from PATCH, fetch it
         if (!updatedJob) {
           const getResponse = await fetch(
-            `http://localhost:8080/api/v1/job-applications/${applicationId}`,
+            `${API_BASE_URL}/api/v1/job-applications/${applicationId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             },

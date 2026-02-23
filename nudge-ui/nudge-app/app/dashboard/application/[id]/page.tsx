@@ -18,6 +18,7 @@ import StatusSelector, {
   getStatusColor,
   getStatusTextColor,
 } from "../../../components/StatusSelector";
+import { API_BASE_URL } from "../../../config";
 
 export default function ApplicationDetailsPage() {
   const router = useRouter();
@@ -35,7 +36,7 @@ export default function ApplicationDetailsPage() {
     const fetchJobDetails = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/job-applications/${id}`,
+          `${API_BASE_URL}/api/v1/job-applications/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -150,7 +151,7 @@ export default function ApplicationDetailsPage() {
                     const token = Cookies.get("nudge_token");
                     if (!token) return;
                     const response = await fetch(
-                      `http://localhost:8080/api/v1/job-applications/${job.applicationId}/resume`,
+                      `${API_BASE_URL}/api/v1/job-applications/${job.applicationId}/resume`,
                       {
                         headers: { Authorization: `Bearer ${token}` },
                       },

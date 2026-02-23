@@ -11,6 +11,7 @@ import AddIcon from "@mui/icons-material/Add";
 // Navbar is now in layout.tsx
 import JobCard from "../components/JobCard";
 import { JobApplicationDTO } from "./types";
+import { API_BASE_URL } from "../config";
 
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -32,7 +33,7 @@ function DashboardContent() {
       try {
         setLoading(true);
         const response = await fetch(
-          "http://localhost:8080/api/v1/job-applications",
+          `${API_BASE_URL}/api/v1/job-applications`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -14,6 +14,7 @@ import Container from "@mui/material/Container";
 import { Paper } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "../../config";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -36,16 +37,13 @@ export default function RegisterPage() {
     event.preventDefault();
     try {
       // LEARN: Sending JSON data to the backend.
-      const response = await fetch(
-        "http://localhost:8080/api/v1/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(formData),
+      });
 
       if (response.ok) {
         const data = await response.json();

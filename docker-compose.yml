@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: nudge-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: jithu
+      POSTGRES_DB: nudge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nudge"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./nudge
+      dockerfile: Dockerfile
+    container_name: nudge-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # Use the container name 'db' to connect since they are on the same docker network
+      - DB_URL=jdbc:postgresql://db:5432/nudge
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=jithu
+      - ALLOWED_ORIGINS=https://nudge-jithin.vercel.app,http://localhost:3000
+      - JWT_KEYSTORE_PASSWORD=jithu123
+      - JWT_KEY_ALIAS=nudge
+      - JWT_KEY_PASSWORD=jithu123
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
