@@ -25,6 +25,15 @@ WORKDIR /app
 # Copy the built artifact from the build stage
 COPY --from=build /app/target/nudge-1.0.0.war app.war
 
+# Default Environment Variables (these can be overridden when running the container)
+ENV DB_URL=jdbc:postgresql://localhost:5432/nudge
+ENV DB_USERNAME=postgres
+ENV DB_PASSWORD=jithu
+ENV ALLOWED_ORIGINS=http://localhost:3000
+ENV JWT_KEYSTORE_PASSWORD=jithu123
+ENV JWT_KEY_ALIAS=nudge
+ENV JWT_KEY_PASSWORD=jithu123
+
 # Expose the application port
 EXPOSE 8080
 
